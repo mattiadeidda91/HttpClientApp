@@ -239,6 +239,16 @@ namespace HttpClientLib.Extensions
         //    return services;
         //}
 
+
+        //Refit HttpClient
+        //var httpRefit = services.AddRefitClient<TInterface>(null, options.HttpClientOptions.Name ?? string.Empty)
+        //    .ConfigureHttpClient(client => 
+        //{
+        //    client.BaseAddress = options.HttpClientOptions.BaseAddress != null ? new Uri(options.HttpClientOptions.BaseAddress) : null;
+        //    if (options.HttpClientOptions.Timeout > 0)
+        //        client.Timeout = TimeSpan.FromMilliseconds(options.HttpClientOptions.Timeout);
+        //});
+
         #endregion
     }
 }
