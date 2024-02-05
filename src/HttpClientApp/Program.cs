@@ -1,3 +1,4 @@
+using HttpClientApp.Handler;
 using HttpClientApp.Services;
 using HttpClientLib.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,8 +44,11 @@ namespace HttpClientApp
                 })
             };
 
+            services.AddTransient<CustomHttpClientHandler>();
+            services.AddTransient<IAuthService, AuthService>();
             services.AddSingleton<MainForm>();
-            services.AddHttpClientPollyRefit<IClientService>(hostContext.Configuration, refitSetting);
+
+            services.AddHttpClientPollyRefit<IClientService, CustomHttpClientHandler>(hostContext.Configuration, refitSetting);
         }
     }
 }

@@ -41,7 +41,35 @@ namespace HttpClientLib.Extensions
             }
 
             return services;
-        }       
+        }
+
+        public static IServiceCollection AddHttpClientPollyRefit<TInterface, THandler>(this IServiceCollection services,
+            IConfiguration configuration,
+            RefitSettings? refitSettings = null)
+                where TInterface : class
+                where THandler : HttpClientHandler
+        {
+            var options = configuration.GetRequiredSection(nameof(HttpRefitPollyOptions)).Get<HttpRefitPollyOptions>();
+
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(options.HttpClientOptions);
+
+            var httpClient = services.AddHttpClient(options.HttpClientOptions.Name ?? string.Empty, client =>
+            {
+                client.BaseAddress = options.HttpClientOptions.BaseAddress != null ? new Uri(options.HttpClientOptions.BaseAddress) : null;
+                if (options.HttpClientOptions.Timeout > 0)
+                    client.Timeout = TimeSpan.FromMilliseconds(options.HttpClientOptions.Timeout);
+            })
+            .AddTypedClient(c => RestService.For<TInterface>(c, refitSettings))
+            .ConfigurePrimaryHttpMessageHandler<THandler>();
+
+            if (options.PollyOptions?.RetryPolicyEnable ?? false)
+            {
+                _ = httpClient.SetDefaultPollyPolicy(options);
+            }
+
+            return services;
+        }
 
         public static IServiceCollection AddHttpClientPollyRefit<TInterface>(this IServiceCollection services, 
             IConfiguration configuration,
@@ -59,12 +87,6 @@ namespace HttpClientLib.Extensions
                 client.BaseAddress = options.HttpClientOptions.BaseAddress != null ? new Uri(options.HttpClientOptions.BaseAddress) : null;
                 if (options.HttpClientOptions.Timeout > 0)
                     client.Timeout = TimeSpan.FromSeconds(options.HttpClientOptions.Timeout);
-
-                //TODO: Scaricare la libreria di estensione di Refit(Refit.HttpClientFactory) per gestire l'handler degli headers passando l'handler all'extension method
-                //if(options.DefaultRequestHeaders != null)
-                //{
-                //    client.DefaultRequestHeaders.Add("Accept", "application/json");
-                //}
             })
             .AddTypedClient(c => RestService.For<TInterface>(c, refitSettings)); //Refit client
 
@@ -76,6 +98,41 @@ namespace HttpClientLib.Extensions
                 if (pollyPolicy != null)
                     httpClient.AddPolicyHandler(pollyPolicy);  //Consumer polly policy
                 else   
+                    httpClient.SetDefaultPollyPolicy(options); //Libary polly default policy
+            }
+
+            return services;
+        }
+
+        public static IServiceCollection AddHttpClientPollyRefit<TInterface, THandler>(this IServiceCollection services,
+            IConfiguration configuration,
+            IAsyncPolicy<HttpResponseMessage>? pollyPolicy = null,
+            RefitSettings? refitSettings = null)
+                where TInterface : class
+                where THandler : HttpClientHandler
+        {
+            var options = configuration.GetRequiredSection(nameof(HttpRefitPollyOptions)).Get<HttpRefitPollyOptions>();
+
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(options.HttpClientOptions);
+
+            var httpClient = services.AddHttpClient(options.HttpClientOptions.Name ?? string.Empty, client =>
+            {
+                client.BaseAddress = options.HttpClientOptions.BaseAddress != null ? new Uri(options.HttpClientOptions.BaseAddress) : null;
+                if (options.HttpClientOptions.Timeout > 0)
+                    client.Timeout = TimeSpan.FromSeconds(options.HttpClientOptions.Timeout);
+            })
+            .AddTypedClient(c => RestService.For<TInterface>(c, refitSettings)) //Refit client
+            .ConfigurePrimaryHttpMessageHandler<THandler>(); //HttpClientHandler
+
+            //Polly configuration
+            if (options.PollyOptions?.RetryPolicyEnable ?? false)
+            {
+                ArgumentNullException.ThrowIfNull(options.PollyOptions);
+
+                if (pollyPolicy != null)
+                    httpClient.AddPolicyHandler(pollyPolicy);  //Consumer polly policy
+                else
                     httpClient.SetDefaultPollyPolicy(options); //Libary polly default policy
             }
 
