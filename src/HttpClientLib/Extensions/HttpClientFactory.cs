@@ -11,12 +11,13 @@ namespace HttpClientLib.Extensions
     public static class HttpClientFactory
     {
         /// <summary>
-        /// Create HttpClient typed
+        /// Create and configure a Refit HttpClient with Polly
         /// </summary>
-        /// <typeparam name="TInterface"></typeparam>
+        /// <typeparam name="TInterface">Refit interface to create a Typed Client</typeparam>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
+        /// <param name="configuration">IConfiguration</param>
+        /// <param name="refitSettings">RefitSettings</param>
+        /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddHttpClientPollyRefit<TInterface>(this IServiceCollection services, 
             IConfiguration configuration, 
             RefitSettings? refitSettings = null)
@@ -43,6 +44,15 @@ namespace HttpClientLib.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Create and configure a Refit HttpClient with Polly
+        /// </summary>
+        /// <typeparam name="TInterface">Refit interface to create a Typed Client</typeparam>
+        /// <typeparam name="THandler">HttpClientHandler</typeparam>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="configuration">IConfiguration</param>
+        /// <param name="refitSettings">RefitSettings</param>
+        /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddHttpClientPollyRefit<TInterface, THandler>(this IServiceCollection services,
             IConfiguration configuration,
             RefitSettings? refitSettings = null)
@@ -71,6 +81,15 @@ namespace HttpClientLib.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Create and configure a Refit HttpClient with Polly
+        /// </summary>
+        /// <typeparam name="TInterface">Refit interface to create a Typed Client</typeparam>
+        /// <param name="services"></param>
+        /// <param name="configuration">IConfiguration</param>
+        /// <param name="pollyPolicy">Polly policy, if null use the default policy</param>
+        /// <param name="refitSettings">RefitSettings</param>
+        /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddHttpClientPollyRefit<TInterface>(this IServiceCollection services, 
             IConfiguration configuration,
             IAsyncPolicy<HttpResponseMessage>? pollyPolicy = null,
@@ -104,6 +123,16 @@ namespace HttpClientLib.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Create and configure a Refit HttpClient with Polly
+        /// </summary>
+        /// <typeparam name="TInterface">Refit interface to create a Typed Client</typeparam>
+        /// <typeparam name="THandler">HttpClientHandler</typeparam>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="configuration">IConfiguration</param>
+        /// <param name="pollyPolicy">Polly policy, if null use the default policy</param>
+        /// <param name="refitSettings">RefitSettings</param>
+        /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddHttpClientPollyRefit<TInterface, THandler>(this IServiceCollection services,
             IConfiguration configuration,
             IAsyncPolicy<HttpResponseMessage>? pollyPolicy = null,

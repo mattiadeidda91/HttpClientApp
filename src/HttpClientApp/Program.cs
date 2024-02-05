@@ -28,7 +28,6 @@ namespace HttpClientApp
             var services = host.Services;
             var mainForm = services.GetService<MainForm>();
 
-            //ApplicationConfiguration.Initialize();
             Application.Run(mainForm);
         }
 
