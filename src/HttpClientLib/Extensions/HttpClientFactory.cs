@@ -32,7 +32,7 @@ namespace HttpClientLib.Extensions
             {
                 client.BaseAddress = options.HttpClientOptions.BaseAddress != null ? new Uri(options.HttpClientOptions.BaseAddress) : null;
                 if (options.HttpClientOptions.Timeout > 0)
-                    client.Timeout = TimeSpan.FromMilliseconds(options.HttpClientOptions.Timeout);
+                    client.Timeout = TimeSpan.FromSeconds(options.HttpClientOptions.Timeout);
             })
             .AddTypedClient(c => RestService.For<TInterface>(c, refitSettings));
 
@@ -68,7 +68,7 @@ namespace HttpClientLib.Extensions
             {
                 client.BaseAddress = options.HttpClientOptions.BaseAddress != null ? new Uri(options.HttpClientOptions.BaseAddress) : null;
                 if (options.HttpClientOptions.Timeout > 0)
-                    client.Timeout = TimeSpan.FromMilliseconds(options.HttpClientOptions.Timeout);
+                    client.Timeout = TimeSpan.FromSeconds(options.HttpClientOptions.Timeout);
             })
             .AddTypedClient(c => RestService.For<TInterface>(c, refitSettings))
             .ConfigurePrimaryHttpMessageHandler<THandler>();
